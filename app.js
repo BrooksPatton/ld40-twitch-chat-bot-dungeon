@@ -2,32 +2,44 @@ require('dotenv').config()
 
 const {client, say} = require('./connection/bot');
 const {isForBot, tell} = require('./utility/miscl');
-const {isActiveGame} = require('./db/queries');
+const Game = require('./game/Game');
+const Player = require('./game/Player');
+const Message = require('./utility/Message');
+
+const game = new Game();
 
 client.on('chat', (channel, userstate, message, self) => {
     if(self) return;
 
     const [bot, command] = message.toLowerCase().split(' ');
 
-    if(isForBot(bot)) handleCommand(command);
+    if(isForBot(bot)) handleCommand(command, userstate.username);
 });
 
-function handleCommand(command) {
+function handleCommand(command, username) {
     switch (command) {
         case 'repo':
-            say.addMessage('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon');
+            say.addMessage(new Message('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon'));
             break;
         
         case 'status':
-            isActiveGame()
-                .then(isActive => {
-                    if(isActive) {
-                        say.addMessage('A game is being played right now');
-                    }
-                    else {
-                        say.addMessage('No game is being played right now');
-                    }
-                })
+            if(game.isActive) {
+                say.addMessage(new Message('A game is being played right now'));
+            }else {
+                say.addMessage(new Message('No game is being played right now'));
+            }
+            break;
+
+        case 'join':
+            if(game.isInGame(username)) {
+                say.addMessage(new Message(`${username}, you are already playing`));
+            } else {
+                const player = new Player(username);
+                game.addPlayer(player);
+
+                say.addMessage(new Message(`${username} you are now entering the dungeon`));
+                say.addMessage(new Message(`You have no weapons, and can only do ${player.damage.sides}d${player.damage.dice} damage`, 'whisper', username));
+            }
             break;
 
         case 'help':

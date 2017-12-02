@@ -23,7 +23,7 @@ client.connect();
 
 client.on('connected', (address, port) => {
     console.log('connected to twitch', address, port);
-    say.addMessage('A large dungeon appears in chat, any of you dare to enter to gain its riches join a party now and test your luck.');
+    // say.addMessage('A large dungeon appears in chat, any of you dare to enter to gain its riches join a party now and test your luck.');
 });
 
 client.on('disconnected', (reason) => {
