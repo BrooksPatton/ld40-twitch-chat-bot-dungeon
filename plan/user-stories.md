@@ -2,7 +2,7 @@
 
 * [x] As a viewer, I want to see when the bot comes online and has connected to the chat
 * [-] As a viewer, I want to find out what the state of the current game is
-* [ ] As a viewer, I want to see what all of the commands are
+* [x] As a viewer, I want to see what all of the commands are
 * [ ] As a viewer, I want to join a game
 * [ ] As a viewer, I want to see who else is playing in the game
 * [ ] As a player, when I join a games I want to see my characters stats

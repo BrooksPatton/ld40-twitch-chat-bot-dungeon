@@ -1,14 +1,18 @@
 class Say {
     constructor(channel, client) {
         this.queue = [];
-        this.timeBetweenMessages = 1000 * 1;
+        this.timeBetweenMessages = 300;
         this.channel = channel;
         this.client = client;
         this.run();
     }
 
     addMessage(message) {
-        this.queue.push(message);
+        if(typeof message === 'string') {
+            this.queue.push(message);
+        } else {
+            message.forEach(str => this.queue.push(str));
+        }
     }
 
     run() {

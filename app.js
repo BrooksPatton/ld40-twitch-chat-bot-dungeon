@@ -18,7 +18,7 @@ function handleCommand(command) {
             say.addMessage('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon');
             break;
         
-        case 'gamestatus':
+        case 'status':
             isActiveGame()
                 .then(isActive => {
                     if(isActive) {
@@ -28,6 +28,17 @@ function handleCommand(command) {
                         say.addMessage('No game is being played right now');
                     }
                 })
+            break;
+
+        case 'help':
+            say.addMessage([
+                'I am a game bot here to kill you in my dungeon',
+                'Possible commands:',
+                'repo - how you can find my code',
+                'status - is there a game being played now',
+                'help - how do you think you got here?'
+            ]);
+
             break;
     
         default:
