@@ -5,7 +5,7 @@
 * [x] As a viewer, I want to see what all of the commands are
 * [x] As a viewer, I want to join a game
 * [x] As a viewer, I want to see who else is playing in the game
-* [ ] As a player, when I join a games I want to see my characters stats
+* [x] As a player, when I join a games I want to see my characters stats
 * [ ] As a player, when I first join the game I want to get two treasures and two loot cards
 * [ ] As a viewer, I want to be able to see the status of any player
 * [ ] As a player, I want to be given the chance to take my turn for 5 minutes

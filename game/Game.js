@@ -29,6 +29,16 @@ class Game {
     get getAllPlayers() {
         return this.players;
     }
+
+    getPlayer(username) {
+        for(let i = 0; i < this.players.length; i = i + 1) {
+            const current = this.players[i];
+
+            if(current.username === username) return current;
+        }
+
+        return false;
+    }
 }
 
 module.exports = Game;

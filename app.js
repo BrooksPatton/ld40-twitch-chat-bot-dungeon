@@ -22,7 +22,7 @@ function handleCommand(command, username) {
             say.addMessage(new Message('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon'));
             break;
         
-        case 'status':
+        case 'game':
             if(game.isActive) {
                 const messages = [
                     'A game is being played right now',
@@ -41,21 +41,32 @@ function handleCommand(command, username) {
                 say.addMessage(new Message(`${username}, you are already playing`));
             } else {
                 const player = new Player(username);
+
                 game.addPlayer(player);
 
-                say.addMessage(new Message(`${username} you are now entering the dungeon`));
-                say.addMessage(new Message(`You have no weapons, and can only do ${player.damage.sides}d${player.damage.dice} damage`, 'whisper', username));
+                say.addMessage(new Message(`${username} you are now entering the dungeon. I whispered you your current status`));
+                say.addMessage(new Message(player.status, 'multi-whisper', username));
             }
             break;
 
+        case 'status':
+            const player = game.getPlayer(username);
+
+            if(!player) break;
+
+            say.addMessage(new Message(player.status, 'multi-whisper', username));
+            break;
+
         case 'help':
-            say.addMessage([
+            say.addMessage(new Message([
                 'I am a game bot here to kill you in my dungeon',
                 'Possible commands:',
                 'repo - how you can find my code',
-                'status - is there a game being played now',
+                'game - is there a game being played now',
+                'join - join a game!',
+                'status - be whispered your status',
                 'help - how do you think you got here?'
-            ]);
+            ], 'multi-line'));
 
             break;
     

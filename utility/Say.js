@@ -44,6 +44,10 @@ class Say {
             case 'whisper':
                 this.sendWhisperMessage(text, whisperTarget);
                 break;
+
+            case 'multi-whisper':
+                this.sendMultiLineWhisperMessage(text, whisperTarget);
+                break;
         
             default:
                 break;
@@ -63,7 +67,18 @@ class Say {
     }
 
     sendWhisperMessage(text, username) {
-        this.client.whisper(username, text);
+        this.client.whisper(username, text)
+            .then(data => console.log('sent whisper', data));
+    }
+
+    sendMultiLineWhisperMessage(messages, username) {
+        if(messages.length === 0) return;
+
+        const message = messages.shift();
+
+        this.client.whisper(username, message);
+
+        setTimeout(() => this.sendMultiLineWhisperMessage(messages, username), 1000);
     }
 }
 
