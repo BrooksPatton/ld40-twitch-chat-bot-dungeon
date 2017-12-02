@@ -1,6 +1,8 @@
 class Game {
-    constructor() {
+    constructor(treasures, loots) {
         this.players = [];
+        this.treasures = treasures;
+        this.loots = loots;
     }
 
     get isActive() {
@@ -23,6 +25,8 @@ class Game {
     }
 
     addPlayer(player) {
+        this.giveRandomTreasuresToPlayer(player);
+        this.giveRandomLootsToPlayer(player);
         this.players.push(player);
     }
 
@@ -38,6 +42,30 @@ class Game {
         }
 
         return false;
+    }
+
+    giveRandomTreasuresToPlayer(player) {
+        for(let i = 0; i < 2; i = i + 1) {
+            player.addTreasure(this.getRandomTreasure());
+        }
+    }
+
+    getRandomTreasure() {
+        const r = Math.floor(Math.random() * this.treasures.length);
+
+        return this.treasures.splice(r, 1)[0];
+    }
+
+    giveRandomLootsToPlayer(player) {
+        for(let i = 0; i < 2; i = i + 1) {
+            player.addTreasure(this.getRandomLoot());
+        }
+    }
+
+    getRandomLoot() {
+        const r = Math.floor(Math.random() * this.loots.length);
+
+        return this.loots.splice(r, 1)[0];
     }
 }
 

@@ -5,8 +5,10 @@ const {isForBot, tell} = require('./utility/miscl');
 const Game = require('./game/Game');
 const Player = require('./game/Player');
 const Message = require('./utility/Message');
+const Item = require('./game/Item');
+const {generateEquippableItems, generateLoots} = require('./game/generateItems');
 
-const game = new Game();
+const game = new Game(generateEquippableItems(), generateLoots());
 
 client.on('chat', (channel, userstate, message, self) => {
     if(self) return;

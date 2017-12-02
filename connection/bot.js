@@ -30,6 +30,11 @@ client.on('disconnected', (reason) => {
     console.log('disconnected from twitch', reason);
 });
 
+client.on('notice', (channel, msgid, message) => {
+    console.log('****** NOTICE FROM TWITCH *****');
+    console.log(msgid, message);
+})
+
 module.exports = {
     client,
     say

@@ -5,6 +5,7 @@ class Say {
         this.channel = channel;
         this.client = client;
         this.run();
+        this.currentMessage;
     }
 
     addMessage(message) {
@@ -63,7 +64,8 @@ class Say {
     }
 
     getMessage() {
-        return this.queue.shift();
+        this.currentMessage = this.queue.shift();
+        return this.currentMessage;
     }
 
     sendWhisperMessage(text, username) {
@@ -76,9 +78,14 @@ class Say {
 
         const message = messages.shift();
 
-        this.client.whisper(username, message);
+        this.client.whisper(username, message)
+            .catch(e => this.resendMessage());
 
-        setTimeout(() => this.sendMultiLineWhisperMessage(messages, username), 1000);
+        setTimeout(() => this.sendMultiLineWhisperMessage(messages, username), 2000);
+    }
+
+    resendMessage() {
+        this.queue.push(this.currentMessage);
     }
 }
 
