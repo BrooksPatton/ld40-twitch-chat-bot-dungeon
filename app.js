@@ -1,38 +1,37 @@
 require('dotenv').config()
 
-const tmi = require('tmi.js');
-
-const options = {
-    options: {
-        debug: true
-    },
-    connection: {
-        reconnect: true
-    },
-    identity: {
-        username: 'brookzerker',
-        password: process.env.PASSWORD
-    },
-    channels: ['#brookzerker']
-};
-
-const client = new tmi.client(options);
-
-client.connect();
-
-client.on('connected', (address, port) => {
-    console.log('connected to twitch', address, port);
-    client.say('#brookzerker', 'A large dungeon appears in chat, any of you dare to enter to gain its riches join a party now and test your luck.');
-});
-
-client.on('disconnected', (reason) => {
-    console.log('disconnected from twitch', reason);
-});
+const {client, say} = require('./connection/bot');
+const {isForBot, tell} = require('./utility/miscl');
+const {isActiveGame} = require('./db/queries');
 
 client.on('chat', (channel, userstate, message, self) => {
-    // console.log('chat received', message);
+    if(self) return;
+
+    const [bot, command] = message.toLowerCase().split(' ');
+
+    if(isForBot(bot)) handleCommand(command);
 });
 
-client.on('emotesets', (sets, obj) => {
-    // console.log('emote sets', obj);
-});
+function handleCommand(command) {
+    switch (command) {
+        case 'repo':
+            say.addMessage('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon');
+            break;
+        
+        case 'gamestatus':
+            isActiveGame()
+                .then(isActive => {
+                    if(isActive) {
+                        say.addMessage('A game is being played right now');
+                    }
+                    else {
+                        say.addMessage('No game is being played right now');
+                    }
+                })
+            break;
+    
+        default:
+            say.addMessage("I couldn't understand you :(");
+            break;
+    }
+}
