@@ -4,7 +4,8 @@ class Player {
         this.damage = {
             sides: 1,
             dice: 1
-        }
+        };
+        this.level = 1;
     }
 }
 

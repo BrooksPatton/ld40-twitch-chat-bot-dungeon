@@ -24,7 +24,13 @@ function handleCommand(command, username) {
         
         case 'status':
             if(game.isActive) {
-                say.addMessage(new Message('A game is being played right now'));
+                const messages = [
+                    'A game is being played right now',
+                    'Here is who is in the dungeon'
+                ];
+
+                game.getAllPlayers.forEach(player => messages.push(`${player.username} is level ${player.level}`));
+                say.addMessage(new Message(messages, 'multi-line'));
             }else {
                 say.addMessage(new Message('No game is being played right now'));
             }

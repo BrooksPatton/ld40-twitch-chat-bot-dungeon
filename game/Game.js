@@ -25,6 +25,10 @@ class Game {
     addPlayer(player) {
         this.players.push(player);
     }
+
+    get getAllPlayers() {
+        return this.players;
+    }
 }
 
 module.exports = Game;
