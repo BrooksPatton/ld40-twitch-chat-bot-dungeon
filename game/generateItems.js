@@ -73,7 +73,7 @@ const monsters = [
         health: 3
     },
     {
-        name: 'crash test dummy',
+        name: 'crash-test-dummy',
         description: 'It does not look dangerous, if you die to it everyone will laugh at you',
         damage: {
             sides: 1,

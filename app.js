@@ -1,7 +1,6 @@
 require('dotenv').config()
 
 const {client, say} = require('./connection/bot');
-const {isForBot, tell} = require('./utility/miscl');
 const Game = require('./game/Game');
 const Player = require('./game/Player');
 const Message = require('./utility/Message');
@@ -12,20 +11,20 @@ const game = new Game();
 client.on('chat', (channel, userstate, message, self) => {
     if(self) return;
 
-    const [bot, command] = message.toLowerCase().split(' ');
+    const [command, item] = message.toLowerCase().split(' ');
 
-    if(isForBot(bot)) handleCommand(command, userstate.username);
+    handleCommand(command, userstate.username, item);
 });
 
-function handleCommand(command, username) {
+function handleCommand(command, username, item) {
     let player;
 
     switch (command) {
-        case 'repo':
+        case '!repo':
             say.addMessage(new Message('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon'));
             break;
         
-        case 'game':
+        case '!game':
             if(game.isActive) {
                 const messages = [
                     'A game is being played right now',
@@ -39,7 +38,7 @@ function handleCommand(command, username) {
             }
             break;
 
-        case 'join':
+        case '!join':
             if(game.isInGame(username)) {
                 say.addMessage(new Message(`${username}, you are already playing`));
             } else {
@@ -52,7 +51,7 @@ function handleCommand(command, username) {
             }
             break;
 
-        case 'status':
+        case '!status':
             player = game.getPlayer(username);
 
             if(!player) break;
@@ -60,7 +59,7 @@ function handleCommand(command, username) {
             say.addMessage(new Message(player.status, 'multi-whisper', username));
             break;
 
-        case 'explore':
+        case '!explore':
             player = game.getCurrentPlayer();
 
             if(player.username !== username) {
@@ -80,16 +79,44 @@ function handleCommand(command, username) {
             }
             break;
 
-        case 'help':
+        case '!play': {
+            if(game.currentPhase !== 'use items') return say.addMessage(new Message(`Cannot play items now`));
+
+            if(!item) {
+                return say.addMessage(new Message(`You must state what item or monster you want to play`));
+            } else {
+                const player = game.getPlayer(username);
+                const loot = player.getLoot(item);
+
+                if(!loot) return say.addMessage(new Message(`Loot item not found`));
+
+                if(loot.type === 'monster') {
+                    if(game.currentLoot.type === 'monster') return say.addMessage(new Message(`There is already a monster to fight`));
+
+                    const currentPlayer = game.getCurrentPlayer();
+
+                    if(currentPlayer.username !== player.username) {
+                        return say.addMessage(new Message(`Only ${currentPlayer.username} can play a monster now`));
+                    } {
+                        game.currentLoot = loot;
+                        say.addMessage(new Message(`You will now be facing a ${game.currentLoot.name}`))
+                    }
+                }
+            }
+            break;
+        }
+
+        case '!help':
             say.addMessage(new Message([
                 'I am a game bot here to kill you in my dungeon',
                 'Possible commands:',
-                'repo - how you can find my code',
-                'game - is there a game being played now',
-                'join - join a game!',
-                'status - be whispered your status',
-                'explore - explore a room in the dungeon when it is your turn',
-                'help - how do you think you got here?'
+                '!repo - how you can find my code',
+                '!game - is there a game being played now',
+                '!join - join a game!',
+                '!status - be whispered your status',
+                '!explore - explore a room in the dungeon when it is your turn',
+                '!play [item] - play an item from your inventory',
+                '!help - how do you think you got here?'
             ], 'multi-line'));
 
             break;

@@ -14,10 +14,9 @@
 * [x] As a player, when it is my turn I want to be able to open the door to the next room
 * [x] As a viewer, I want to see what it is that the player is facing in the room
 * [x] As a player, I want to fight a monster if I think I can beat it
-* [ ] As a player, if I defeat a monster I want to gain a level
+* [x] As a player, if I defeat a monster I want to gain a level
 * [x] As a player, if I open a door and an item is in the room, I get the item
-* [ ] As a player, I can play any item that I have after resolving the room
-* [ ] As a player, I can play a monster from my bag if there wasn't a monster in the room. I must immediately fight the monster after
+* [x] As a player, I can play a monster from my bag if there wasn't a monster in the room. I must immediately fight the monster after
 * [ ] As a player, if there was no monster in the room I can look for loot in the room and get it privately
 * [ ] As a viewer, I want to see the result of a player fighting a monster
 * [ ] As a player, if I fight a monster alone and win I want to get the treasure privately

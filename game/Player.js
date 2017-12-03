@@ -87,6 +87,14 @@ class Player {
     increaseLevel() {
         this.level = this.level + 1;
     }
+
+    getLoot(item) {
+        let loot = this.items.find(thing => thing.name === item);
+
+        if(!loot) loot = this.monsters.find(thing => thing.name === item);
+
+        return loot;
+    }
 }
 
 module.exports = Player;
