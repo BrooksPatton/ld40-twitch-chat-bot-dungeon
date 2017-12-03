@@ -1,7 +1,7 @@
 class Say {
     constructor(channel, client) {
         this.queue = [];
-        this.timeBetweenMessages = 1000;
+        this.timeBetweenMessages = 5000;
         this.channel = channel;
         this.client = client;
         this.run();

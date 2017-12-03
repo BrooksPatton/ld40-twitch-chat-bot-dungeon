@@ -3,6 +3,35 @@ class Game {
         this.players = [];
         this.treasures = treasures;
         this.loots = loots;
+        this.currentPlayersTurnIndex = 0;
+        this.phases = [
+            'waiting',
+            'explore',
+            'ask for help',
+            'use items',
+            'fight',
+            'loot',
+            'run away'
+        ];
+        this.currentPhase = null;
+        this.waitTimer;
+        this.currentLoot;
+        this.timedOut = false;
+    }
+
+    nextPhase() {
+        switch (this.currentPhase) {
+            case null:
+                this.currentPhase = 'waiting';
+                break;
+
+            case 'waiting':
+                this.currentPhase = 'explore';
+                break;
+        
+            default:
+                break;
+        }
     }
 
     get isActive() {
@@ -53,7 +82,7 @@ class Game {
     getRandomTreasure() {
         const r = Math.floor(Math.random() * this.treasures.length);
 
-        return this.treasures.splice(r, 1)[0];
+        return this.treasures[r];
     }
 
     giveRandomLootsToPlayer(player) {
@@ -65,7 +94,26 @@ class Game {
     getRandomLoot() {
         const r = Math.floor(Math.random() * this.loots.length);
 
-        return this.loots.splice(r, 1)[0];
+        return this.loots[r];
+    }
+
+    getCurrentPlayer() {
+        return this.players[this.currentPlayersTurnIndex];
+    }
+
+    waitingForPlayerResponse() {
+        this.waitTimer = setTimeout(() => {
+            this.timedOut = true;
+        }, 1000 * 60);
+    }
+
+    stopTimer() {
+        clearTimeout(this.waitTimer);
+    }
+
+    nextTurn() {
+        this.currentPlayersTurnIndex = this.currentPlayersTurnIndex + 1 >= this.players.length ? 0 : this.currentPlayersTurnIndex + 1;
+        this.currentPhase = null;
     }
 }
 
