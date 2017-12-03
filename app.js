@@ -69,7 +69,7 @@ function handleCommand(command, username, item) {
                     game.stopTimer();
                     game.nextPhase();
                     game.currentLoot = game.getRandomLoot();
-                    say.addMessage(new Message(`You explore the dungeon and see a ${game.currentLoot.name}.`));
+                    say.addMessage(new Message(`You explore the dungeon and see a level ${game.currentLoot.level} ${game.currentLoot.name}.`));
 
                     if(game.currentLoot.type !== 'monster') {
                         player.addTreasure(game.currentLoot);
@@ -100,7 +100,12 @@ function handleCommand(command, username, item) {
                     } {
                         game.currentLoot = loot;
                         say.addMessage(new Message(`You will now be facing a ${game.currentLoot.name}`))
+                        player.removeLoot(loot);
                     }
+                } else {
+                    game.playItem(loot);
+                    say.addMessage(new Message(loot.description));
+                    player.removeLoot(loot);
                 }
             }
             break;
@@ -115,8 +120,7 @@ function handleCommand(command, username, item) {
                 '!join - join a game!',
                 '!status - be whispered your status',
                 '!explore - explore a room in the dungeon when it is your turn',
-                '!play [item] - play an item from your inventory',
-                '!help - how do you think you got here?'
+                '!play [item name] - plays an item to affect combat',
             ], 'multi-line'));
 
             break;
@@ -171,17 +175,20 @@ function playGame() {
     } else if(game.currentPhase === 'fight') {
         if(game.currentLoot.type === 'monster') {
             const monster = game.currentLoot;
+            const modifiers = game.calculateCombatModifiers();
+
+
 
             while(player.health > 0) {
-                let damage = player.getDamage();
+                let damage = player.getDamage() + modifiers.player.attackUp;
 
-                monster.hitBy(damage);
+                monster.hitBy(damage, modifiers);
                 say.addMessage(new Message(`${player.username} hits ${monster.name} for ${damage} damage. It's health now is ${monster.health}`));
                 
                 if(monster.health > 0) {
-                    damage = monster.getDamage();
+                    damage = monster.getDamage() + modifiers.monster.attackUp;
 
-                    player.hitBy(damage);
+                    player.hitBy(damage, modifiers);
                     say.addMessage(new Message(`${monster.name} hits ${player.username} for ${damage} damage. Their health now is ${player.health}`));
                 } else {
                     break;

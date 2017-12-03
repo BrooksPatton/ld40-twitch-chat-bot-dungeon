@@ -33,32 +33,84 @@ const treasure = [
 
 const loots = [
     {
-        name: 'potion of +5 monster health',
-        description: 'it looks oily',
+        name: 'hard-scales',
+        description: 'the monsters skin hardens. Defense up by 5',
         attackUp: 0,
         defenseUp: 5,
-        type: 'item'
+        type: 'item',
+        affects: 'monster'
     },
     {
-        name: 'potion of +5 monster attack',
-        description: 'it looks fiery',
+        name: 'sharp-claws',
+        description: 'the monsters claws can cut tomatoes now. Attack up by 5',
         attackUp: 5,
         defenseUp: 0,
-        type: 'item'
+        type: 'item',
+        affects: 'monster'
     },
     {
         name: 'boomerang',
-        description: 'You can hit a monster to reduce its health by 3',
+        description: 'A boomerang flies through the air and hits the monster in the head. Defense down by 5',
         attackUp: 0,
-        defenseUp: -3,
-        type: 'item'
+        defenseUp: -5,
+        type: 'item',
+        affects: 'monster'
+    },
+    {
+        name: 'nail-file',
+        description: 'While the monster is not looking, its claws are filed down. Attack down by 5',
+        attackUp: -5,
+        defenseUp: 0,
+        type: 'item',
+        affects: 'monster'
     },
     {
         name: 'radiation',
-        description: 'it looks green',
+        description: 'The monster begins to glow green. It seems weaker but also stronger if that makes any sense. Attack up by 5 and defense down by 5',
         attackUp: 5,
         defenseUp: -5,
-        type: 'item'
+        type: 'item',
+        affects: 'monster'
+    },
+    {
+        name: 'protect',
+        description: 'A glimmering force field surrounds the hero. Defense up by 5',
+        attackUp: 0,
+        defenseUp: 5,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'sharpening-stone',
+        description: 'The heros weapon looks sharper. Attack up by 5',
+        attackUp: 5,
+        defenseUp: 0,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'slingshot',
+        description: 'A rock flies through the air and hits the player in the head. Defense down by 5',
+        attackUp: 0,
+        defenseUp: -5,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'broken-sword',
+        description: 'It turns out the heros sword is broken. Attack down by 5',
+        attackUp: -5,
+        defenseUp: 0,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'berzerk',
+        description: 'The hero grows angry. They seems weaker but also stronger if that makes any sense. Attack up by 5 and defense down by 5',
+        attackUp: 5,
+        defenseUp: -5,
+        type: 'item',
+        affects: 'player'
     },
 ];
 
@@ -108,7 +160,7 @@ function getRandomTreasure() {
 }
 
 function getRandomLoot() {
-    if(Math.random() > 0.01) {
+    if(Math.random() > 0.5) {
         const r = Math.floor(Math.random() * loots.length);
 
         return loots[r];

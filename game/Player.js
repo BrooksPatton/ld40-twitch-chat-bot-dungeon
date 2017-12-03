@@ -31,7 +31,7 @@ class Player {
         this.items.forEach(item => output.push(item.name));
 
         output.push(`-- Monsters --`);
-        this.monsters.forEach(monster => output.push(monster.name));
+        this.monsters.forEach(monster => output.push(`level ${monster.level} ${monster.name}`));
 
         return output;
     }
@@ -72,8 +72,8 @@ class Player {
         return damage;
     }
 
-    hitBy(damage) {
-        const defense = this.calculateDefense();
+    hitBy(damage, modifiers) {
+        const defense = this.calculateDefense() + modifiers.player.defenseUp;
 
         damage = defense >= damage ? 0 : damage - defense;
 
@@ -94,6 +94,16 @@ class Player {
         if(!loot) loot = this.monsters.find(thing => thing.name === item);
 
         return loot;
+    }
+
+    removeLoot(loot) {
+        let index = this.items.findIndex(item => item.name === loot.name);
+
+        if(index > -1) return this.items.splice(index, 1);
+
+        index = this.monsters.findIndex(monster => monster.name === loot.name);
+
+        if(index > -1) return this.monsters.splice(index, 1);
     }
 }
 

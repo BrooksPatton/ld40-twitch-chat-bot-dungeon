@@ -12,7 +12,10 @@ class Monster {
         this.type = 'monster';
     }
 
-    hitBy(damage) {
+    hitBy(damage, modifiers) {
+        const defense = modifiers.monster.defenseUp;
+
+        damage = defense >= damage ? 0 : damage - defense;
         this.health = this.health - damage;
     }
 

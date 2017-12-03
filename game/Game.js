@@ -17,6 +17,7 @@ class Game {
         this.currentLoot;
         this.timedOut = false;
         this.messageSentThisPhase = false;
+        this.currentItems = [];
     }
 
     nextPhase() {
@@ -120,6 +121,7 @@ class Game {
     nextTurn() {
         this.currentPlayersTurnIndex = this.currentPlayersTurnIndex + 1 >= this.players.length ? 0 : this.currentPlayersTurnIndex + 1;
         this.currentPhase = null;
+        this.currentItems = [];
     }
 
     getRandomLoot() {
@@ -137,6 +139,30 @@ class Game {
 
     get numberOfplayers() {
         return this.players.length;
+    }
+
+    playItem(loot) {
+        this.currentItems.push(loot);
+    }
+
+    calculateCombatModifiers() {
+        const result = {
+            player: {
+                attackUp: 0,
+                defenseUp: 0
+            },
+            monster: {
+                attackUp: 0,
+                defenseUp: 0
+            }
+        };
+
+        return this.currentItems.reduce((modifiers, item) => {
+            modifiers[item.affects].attackUp += item.attackUp;
+            modifiers[item.affects].defenseUp += item.defenseUp;
+
+            return modifiers;
+        }, result);
     }
 }
 

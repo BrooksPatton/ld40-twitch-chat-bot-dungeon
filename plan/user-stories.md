@@ -18,7 +18,7 @@
 * [x] As a player, if there was no monster in the room I can look for loot in the room and get it privately
 * [x] As a viewer, I want to see the result of a player fighting a monster
 * [x] As a player, if I fight a monster alone and win I want to get the treasure privately
-* [ ] As a player, I want to be able to use an item before fightning a monster
+* [x] As a player, I want to be able to use an item before fightning a monster
 * [x] As a player, I want to be able to ask for help in fighting a monster
 * [ ] As a player, I want to be able to join a fight if a player has asked for help and I want to help
 * [ ] As a player, I want to be able to offer treasure to a potential helper as a bribe
