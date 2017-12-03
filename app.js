@@ -5,6 +5,7 @@ const Game = require('./game/Game');
 const Player = require('./game/Player');
 const Message = require('./utility/Message');
 const Item = require('./game/Item');
+const {secondsToWaitPerPlayer} = require('./config');
 
 const game = new Game();
 
@@ -17,8 +18,6 @@ client.on('chat', (channel, userstate, message, self) => {
 });
 
 function handleCommand(command, username, item) {
-    let player;
-
     switch (command) {
         case '!repo':
             say.addMessage(new Message('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon'));
@@ -42,7 +41,7 @@ function handleCommand(command, username, item) {
             if(game.isInGame(username)) {
                 say.addMessage(new Message(`${username}, you are already playing`));
             } else {
-                player = new Player(username);
+                var player = new Player(username);
 
                 game.addPlayer(player);
 
@@ -52,7 +51,7 @@ function handleCommand(command, username, item) {
             break;
 
         case '!status':
-            player = game.getPlayer(username);
+            var player = game.getPlayer(username);
 
             if(!player) break;
 
@@ -60,7 +59,7 @@ function handleCommand(command, username, item) {
             break;
 
         case '!explore':
-            player = game.getCurrentPlayer();
+            var player = game.getCurrentPlayer();
 
             if(player.username !== username) {
                 say.addMessage(new Message(`It is not your turn ${username}`));
@@ -85,7 +84,7 @@ function handleCommand(command, username, item) {
             if(!item) {
                 return say.addMessage(new Message(`You must state what item or monster you want to play`));
             } else {
-                const player = game.getPlayer(username);
+                var player = game.getPlayer(username);
                 const loot = player.getLoot(item);
 
                 if(!loot) return say.addMessage(new Message(`Loot item not found`));
@@ -111,6 +110,21 @@ function handleCommand(command, username, item) {
             break;
         }
 
+        case '!run':
+            var player = game.getCurrentPlayer();
+            const phase = game.currentPhase;
+
+            if(phase === 'ask for help' || phase === 'use items') {
+                if(player.username !== username) return say.addMessage(new Message(`Only ${player.username} can decide to run away`));
+
+                player.toggleRunningAway();
+
+                const message = player.runningAway ? 'You are now running away' : 'You are facing the monster bravely';
+
+                say.addMessage(new Message(message));
+            }
+            break;
+
         case '!help':
             say.addMessage(new Message([
                 'I am a game bot here to kill you in my dungeon',
@@ -121,6 +135,8 @@ function handleCommand(command, username, item) {
                 '!status - be whispered your status',
                 '!explore - explore a room in the dungeon when it is your turn',
                 '!play [item name] - plays an item to affect combat',
+                '!run - run away from the monster',
+                '!help - this help'
             ], 'multi-line'));
 
             break;
@@ -152,12 +168,12 @@ function playGame() {
         if(game.messageSentThisPhase) return;
 
         let message;
-        let time = 1000 * 60 * (game.numberOfplayers - 1);
+        let time = 1000 * secondsToWaitPerPlayer * (game.numberOfplayers - 1);
 
         if(game.currentLoot.type === 'monster') {
-            message = `${player.username} you have ${time / 60000} minutes to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
+            message = `${player.username} you have ${time / 1000} seconds to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
         } else {
-            message = `${player.username} you have ${time / 60000} minutes to negotiate help in case you want to fight your own monster`;
+            message = `${player.username} you have ${time / 1000} seconds to negotiate help in case you want to fight your own monster`;
         }
 
         say.addMessage(new Message(message));
@@ -166,7 +182,7 @@ function playGame() {
     } else if(game.currentPhase === 'use items') {
         if(game.messageSentThisPhase) return;
 
-        const time = 1000 * 60 * game.numberOfplayers;
+        const time = 1000 * secondsToWaitPerPlayer * game.numberOfplayers;
 
         say.addMessage(new Message(`All players, you now have ${time / 60000} minutes to use any items you want`));
 
@@ -180,10 +196,19 @@ function playGame() {
 
 
             while(player.health > 0) {
-                let damage = player.getDamage() + modifiers.player.attackUp;
+                if(!player.runningAway) {
+                    let damage = player.getDamage() + modifiers.player.attackUp;
 
-                monster.hitBy(damage, modifiers);
-                say.addMessage(new Message(`${player.username} hits ${monster.name} for ${damage} damage. It's health now is ${monster.health}`));
+                    monster.hitBy(damage, modifiers);
+                    say.addMessage(new Message(`${player.username} hits ${monster.name} for ${damage} damage. It's health now is ${monster.health}`));
+                } else {
+                    if(player.didRunAway()) {
+                        say.addMessage(new Message(`${player.username} ran away!`));
+                        break;
+                    } else {
+                        say.addMessage(new Message(`The monster blocked ${player.username} from running away`));
+                    }
+                }
                 
                 if(monster.health > 0) {
                     damage = monster.getDamage() + modifiers.monster.attackUp;
@@ -200,10 +225,15 @@ function playGame() {
                 game.kill(player);
                 game.nextTurn();
             } else {
-                player.increaseLevel();
-                player.addTreasure(monster.treasure);
-                say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a treasure!!!`));
-                game.nextPhase();
+                if(player.runningAway) {
+                    player.resetRunningAway();
+                    game.nextTurn();
+                } else {
+                    player.increaseLevel();
+                    player.addTreasure(monster.treasure);
+                    say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a treasure!!!`));
+                    game.nextPhase();
+                }
             }
 
         } else {

@@ -1,3 +1,4 @@
 module.exports = {
-    channel: '#brookzerker'
+    channel: '#brookzerker',
+    secondsToWaitPerPlayer: 15
 }

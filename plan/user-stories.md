@@ -20,14 +20,11 @@
 * [x] As a player, if I fight a monster alone and win I want to get the treasure privately
 * [x] As a player, I want to be able to use an item before fightning a monster
 * [x] As a player, I want to be able to ask for help in fighting a monster
-* [ ] As a player, I want to be able to join a fight if a player has asked for help and I want to help
-* [ ] As a player, I want to be able to offer treasure to a potential helper as a bribe
-* [ ] As a player, I can choose to not honor my promise
+* [x] As a player, I want to be able to run away from the monster
+* [x] As a player, I want to be able to offer treasure to a potential helper as a bribe
+* [x] As a player, I can choose to not honor my promise
 * [ ] As a player, I can tell the bot to give treasure to the helper player
-* [ ] As a player, I want to be able to run away from the monster
 * [ ] As a player, I want to use an item to help running away
-* [ ] As a player, I will have bad stuff happen to me if I fail to run away
-* [ ] As a helper player, I need to run away as well if we cannot defeat the monster
-* [ ] As a player, if I die my stuff if given to the other players
-* [ ] As a player, I want to be able to help the monster to hurt another player
+* [x] As a player, I will have bad stuff happen to me if I fail to run away
+* [x] As a player, I want to be able to help the monster to hurt another player
 * [ ] I want a lot of treasures, loots, and monsters in the game

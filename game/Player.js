@@ -14,6 +14,8 @@ class Player {
         this.monsters = [];
         this.health = 10;
         this.baseHealth = 10;
+        this.runningAway = false;
+        this.runawayChance = 0.33;
     }
 
     get status() {
@@ -104,6 +106,20 @@ class Player {
         index = this.monsters.findIndex(monster => monster.name === loot.name);
 
         if(index > -1) return this.monsters.splice(index, 1);
+    }
+
+    resetRunningAway() {
+        this.runningAway = false;
+    }
+
+    toggleRunningAway() {
+        this.runningAway = !this.runningAway;
+    }
+
+    didRunAway() {
+        const r = Math.random();
+
+        return r < this.runawayChance;
     }
 }
 
