@@ -1,5 +1,5 @@
 module.exports = {
     channel: '#brookzerker',
-    secondsToWaitPerPlayer: 15,
+    secondsToWaitPerPlayer: 30,
     winLevel: 5
 }

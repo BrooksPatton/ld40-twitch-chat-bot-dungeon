@@ -12,12 +12,12 @@ let game = new Game();
 client.on('chat', (channel, userstate, message, self) => {
     if(self) return;
 
-    const [command, item] = message.toLowerCase().split(' ');
+    const [command, item, targetUsername] = message.toLowerCase().split(' ');
 
-    handleCommand(command, userstate.username, item);
+    handleCommand(command, userstate.username, item, targetUsername);
 });
 
-function handleCommand(command, username, item) {
+function handleCommand(command, username, item, targetUsername) {
     switch (command) {
         case '!repo':
             say.addMessage(new Message('Find my code at https://github.com/BrooksPatton/ld40-twitch-chat-bot-dungeon'));
@@ -45,7 +45,7 @@ function handleCommand(command, username, item) {
 
                 game.addPlayer(player);
 
-                say.addMessage(new Message(`${username} you are now entering the dungeon. I whispered you your current status`));
+                say.addMessage(new Message(`${username} you are now entering the dungeon. Here is your current status:`));
                 say.addMessage(new Message(player.status, 'multi-line'));
             }
             break;
@@ -68,7 +68,7 @@ function handleCommand(command, username, item) {
                     game.stopTimer();
                     game.nextPhase();
                     game.currentLoot = game.getRandomLoot();
-                    say.addMessage(new Message(`You explore the dungeon and see a level ${game.currentLoot.level} ${game.currentLoot.name}.`));
+                    say.addMessage(new Message(`You explore the dungeon and see a ${game.currentLoot.level ? 'level ' + game.currentLoot.level : ''} ${game.currentLoot.name}.`));
 
                     if(game.currentLoot.type !== 'monster') {
                         player.addTreasure(game.currentLoot);
@@ -125,6 +125,28 @@ function handleCommand(command, username, item) {
             }
             break;
 
+        case '!transfer':
+            var player = game.getPlayer(username);
+            const itemToTransfer = player.getLoot(item) || player.getTreasure(item);
+            let message;
+            const targetPlayer = game.getPlayer(targetUsername);
+
+            if(!player) {
+                message = `You are not in the game`;
+            }
+            else if(!itemToTransfer) {
+                message = `itemToTransfer not found`;
+            } else if(!targetPlayer) {
+                message = `Target player not found`;
+            } else {
+                player.removeLoot(itemToTransfer) || player.removeTreasure(itemToTransfer);
+                targetPlayer.addTreasure(itemToTransfer);
+                message = `${itemToTransfer.name} has been transferred to ${targetPlayer.username}`;
+            }
+
+            say.addMessage(new Message(message));
+            break;
+
         case '!help':
             say.addMessage(new Message([
                 'I am a game bot here to kill you in my dungeon',
@@ -136,13 +158,13 @@ function handleCommand(command, username, item) {
                 '!explore - explore a room in the dungeon when it is your turn',
                 '!play [item name] - plays an item to affect combat',
                 '!run - run away from the monster',
+                '!transfer [item name] [player name] - Give an item to another player',
                 '!help - this help'
             ], 'multi-line'));
 
             break;
     
         default:
-            say.addMessage("I couldn't understand you :(");
             break;
     }
 }
@@ -172,9 +194,9 @@ function playGame() {
         const seconds = time / 1000;
 
         if(game.currentLoot.type === 'monster') {
-            message = `${player.username} you have ${seconds > 0 ? seconds : ''} seconds to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
+            message = `${player.username} you have ${seconds} seconds to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
         } else {
-            message = `${player.username} you have ${seconds > 0 ? seconds : ''} seconds to negotiate help in case you want to fight your own monster`;
+            message = `${player.username} you have ${seconds} seconds to negotiate help in case you want to fight your own monster`;
         }
 
         say.addMessage(new Message(message));
@@ -186,7 +208,7 @@ function playGame() {
         const time = 1000 * secondsToWaitPerPlayer * game.numberOfplayers;
         const seconds = time / 1000;
 
-        say.addMessage(new Message(`All players, you now have ${seconds > 0 ? seconds : ''} seconds to use any items you want`));
+        say.addMessage(new Message(`All players, you now have ${seconds} seconds to use any items you want`));
 
         setTimeout(() => game.nextPhase(), time);
         game.messageSentThisPhase = true;
@@ -239,8 +261,9 @@ function playGame() {
             }
 
         } else {
-            say.addMessage(new Message(`You loot through the room and find something.`));
-            player.addTreasure(game.getRandomLoot());
+            const loot = game.getRandomLoot();
+            say.addMessage(new Message(`You loot through the room and find a ${loot.level ? 'level ' + loot.level : ''} ${loot.name}`));
+            player.addTreasure(loot);
             game.nextTurn();
         }
     } else if(game.currentPhase === 'resolve turn') {

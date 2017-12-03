@@ -98,14 +98,32 @@ class Player {
         return loot;
     }
 
+    getTreasure(item) {
+        let treasure = this.equipped.defense.find(thing => thing.name === item);
+
+        if(!treasure) treasure = this.equipped.weapons.find(thing => thing.name === item);
+
+        return treasure;
+    }
+
     removeLoot(loot) {
         let index = this.items.findIndex(item => item.name === loot.name);
 
-        if(index > -1) return this.items.splice(index, 1);
+        if(index > -1) return this.items.splice(index, 1)[0];
 
         index = this.monsters.findIndex(monster => monster.name === loot.name);
 
-        if(index > -1) return this.monsters.splice(index, 1);
+        if(index > -1) return this.monsters.splice(index, 1)[0];
+    }
+
+    removeTreasure(treasure) {
+        let index = this.equipped.defense.findIndex(item => item.name === treasure.name);
+
+        if(index > -1) return this.equipped.defense.splice(index, 1)[0];
+
+        index = this.equipped.weapons.findIndex(item => item.name === treasure.name);
+
+        if(index > -1) return this.equipped.weapons.splice(index, 1)[0];
     }
 
     resetRunningAway() {

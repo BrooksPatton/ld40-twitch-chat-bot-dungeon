@@ -2,30 +2,30 @@ const Monster = require('./Monster');
 
 const treasure = [
     {
-        name: 'Helm of +1 defense',
+        name: 'shiny-helm',
         description: 'A shiny helmet that looks like it might save you...maybe',
         attackUp: 0,
         defenseUp: 1,
         type: 'defense'
     },
     {
-        name: 'Armor of +1 defense',
+        name: 'shiny-armor',
         description: 'Shiny armor that looks like it might stop attacks',
         attackUp: 0,
-        defenseUp: 1,
+        defenseUp: 2,
         type: 'defense'
     },
     {
-        name: 'Wooden stick',
+        name: 'stick',
         description: 'It looks like kindling from a fireplace',
         attackUp: 1,
         defenseUp: 0,
         type: 'weapon'
     },
     {
-        name: 'broken spear',
+        name: 'broken-spear',
         description: 'Some people say a broken spear is just a stick',
-        attackUp: 1,
+        attackUp: 2,
         defenseUp: 0,
         type: 'weapon'
     },
