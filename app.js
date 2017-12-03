@@ -112,7 +112,7 @@ function handleCommand(command, username, item, targetUsername) {
 
         case '!run':
             var player = game.getCurrentPlayer();
-            const phase = game.currentPhase;
+            var phase = game.currentPhase;
 
             if(phase === 'ask for help' || phase === 'use items') {
                 if(player.username !== username) return say.addMessage(new Message(`Only ${player.username} can decide to run away`));
@@ -147,6 +147,28 @@ function handleCommand(command, username, item, targetUsername) {
             say.addMessage(new Message(message));
             break;
 
+        case '!skip':
+            var player = game.getCurrentPlayer();
+            var phase = game.currentPhase;
+
+            if(player.username !== username) {
+                const message = `Only ${player.username} can skip right now`;
+                return say.addMessage(new Message(message));
+            } else if(phase === 'waiting') {
+                const message = `Skipping ${player.username}'s turn`;
+                say.addMessage(new Message(message));
+                game.stopTimer();
+                game.timedOut = false;
+                return game.nextTurn();
+            } else if(phase === 'ask for help' || phase === 'use items') {
+                const message = `Moving to the next phase`;
+                say.addMessage(new Message(message));
+                game.stopTimer();
+                game.timedOut = false;
+                return game.nextPhase();
+            }
+            break;
+
         case '!help':
             say.addMessage(new Message([
                 'I am a game bot here to kill you in my dungeon',
@@ -159,6 +181,7 @@ function handleCommand(command, username, item, targetUsername) {
                 '!play [item name] - plays an item to affect combat',
                 '!run - run away from the monster',
                 '!transfer [item name] [player name] - Give an item to another player',
+                '!skip',
                 '!help - this help'
             ], 'multi-line'));
 
@@ -169,7 +192,7 @@ function handleCommand(command, username, item, targetUsername) {
     }
 }
 
-setInterval(() => playGame(), 1000);
+setInterval(() => playGame(), 0);
 
 function playGame() {
     if(!game.isActive) return;
@@ -179,13 +202,13 @@ function playGame() {
     if(game.timedOut) {
         say.addMessage(new Message(`${player.username} waited too long`));
         game.timedOut = false;
-        game.nextTurn();
+        return game.nextTurn();
     }
 
     if(!game.currentPhase) {
         say.addMessage(new Message(`${player.username} it is your turn, start by exploring`));
         game.nextPhase();
-        game.waitingForPlayerResponse();
+        return game.waitingForPlayerResponse();
     } else if(game.currentPhase === 'ask for help') {
         if(game.messageSentThisPhase) return;
 
@@ -200,8 +223,8 @@ function playGame() {
         }
 
         say.addMessage(new Message(message));
-        setTimeout(() => game.nextPhase(), time);
-        game.messageSentThisPhase = true;
+        game.waitTimer = setTimeout(() => game.nextPhase(), time);
+        return game.messageSentThisPhase = true;
     } else if(game.currentPhase === 'use items') {
         if(game.messageSentThisPhase) return;
 
@@ -210,8 +233,8 @@ function playGame() {
 
         say.addMessage(new Message(`All players, you now have ${seconds} seconds to use any items you want`));
 
-        setTimeout(() => game.nextPhase(), time);
-        game.messageSentThisPhase = true;
+        game.waitTimer = setTimeout(() => game.nextPhase(), time);
+        return game.messageSentThisPhase = true;
     } else if(game.currentPhase === 'fight') {
         if(game.currentLoot.type === 'monster') {
             const monster = game.currentLoot;
@@ -247,16 +270,16 @@ function playGame() {
             if(player.health <= 0) {
                 say.addMessage(new Message(`${player.username} you fought valiently but died to the ${monster.name}`));
                 game.kill(player);
-                game.nextTurn();
+                return game.nextTurn();
             } else {
                 if(player.runningAway) {
                     player.resetRunningAway();
-                    game.nextTurn();
+                    return game.nextTurn();
                 } else {
                     player.increaseLevel();
                     player.addTreasure(monster.treasure);
-                    say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a treasure!!!`));
-                    game.nextPhase();
+                    say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a ${monster.treasure.name}`));
+                    return game.nextPhase();
                 }
             }
 
@@ -264,15 +287,15 @@ function playGame() {
             const loot = game.getRandomLoot();
             say.addMessage(new Message(`You loot through the room and find a ${loot.level ? 'level ' + loot.level : ''} ${loot.name}`));
             player.addTreasure(loot);
-            game.nextTurn();
+            return game.nextTurn();
         }
     } else if(game.currentPhase === 'resolve turn') {
         if(player.level >= winLevel) {
             say.addMessage(new Message(`Game Over, ${player.username} won!`));
-            game = new Game();
+            return game = new Game();
         } else {
             player.resetHealth();
-            game.nextTurn();
+            return game.nextTurn();
         }
     }
 }
