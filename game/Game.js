@@ -122,6 +122,7 @@ class Game {
         this.currentPlayersTurnIndex = this.currentPlayersTurnIndex + 1 >= this.players.length ? 0 : this.currentPlayersTurnIndex + 1;
         this.currentPhase = null;
         this.currentItems = [];
+        this.currentLoot = null;
     }
 
     getRandomLoot() {

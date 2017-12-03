@@ -121,6 +121,10 @@ class Player {
 
         return r < this.runawayChance;
     }
+
+    resetHealth() {
+        this.health = this.baseHealth;
+    }
 }
 
 module.exports = Player;

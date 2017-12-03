@@ -5,9 +5,9 @@ const Game = require('./game/Game');
 const Player = require('./game/Player');
 const Message = require('./utility/Message');
 const Item = require('./game/Item');
-const {secondsToWaitPerPlayer} = require('./config');
+const {secondsToWaitPerPlayer, winLevel} = require('./config');
 
-const game = new Game();
+let game = new Game();
 
 client.on('chat', (channel, userstate, message, self) => {
     if(self) return;
@@ -168,12 +168,13 @@ function playGame() {
         if(game.messageSentThisPhase) return;
 
         let message;
-        let time = 1000 * secondsToWaitPerPlayer * (game.numberOfplayers - 1);
+        const time = 1000 * secondsToWaitPerPlayer * (game.numberOfplayers - 1);
+        const seconds = time / 1000;
 
         if(game.currentLoot.type === 'monster') {
-            message = `${player.username} you have ${time / 1000} seconds to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
+            message = `${player.username} you have ${seconds > 0 ? seconds : ''} seconds to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
         } else {
-            message = `${player.username} you have ${time / 1000} seconds to negotiate help in case you want to fight your own monster`;
+            message = `${player.username} you have ${seconds > 0 ? seconds : ''} seconds to negotiate help in case you want to fight your own monster`;
         }
 
         say.addMessage(new Message(message));
@@ -183,8 +184,9 @@ function playGame() {
         if(game.messageSentThisPhase) return;
 
         const time = 1000 * secondsToWaitPerPlayer * game.numberOfplayers;
+        const seconds = time / 1000;
 
-        say.addMessage(new Message(`All players, you now have ${time / 60000} minutes to use any items you want`));
+        say.addMessage(new Message(`All players, you now have ${seconds > 0 ? seconds : ''} seconds to use any items you want`));
 
         setTimeout(() => game.nextPhase(), time);
         game.messageSentThisPhase = true;
@@ -239,6 +241,14 @@ function playGame() {
         } else {
             say.addMessage(new Message(`You loot through the room and find something.`));
             player.addTreasure(game.getRandomLoot());
+            game.nextTurn();
+        }
+    } else if(game.currentPhase === 'resolve turn') {
+        if(player.level >= winLevel) {
+            say.addMessage(new Message(`Game Over, ${player.username} won!`));
+            game = new Game();
+        } else {
+            player.resetHealth();
             game.nextTurn();
         }
     }
