@@ -37,6 +37,7 @@ const loots = [
         description: 'the monsters skin hardens. Defense up by 5',
         attackUp: 0,
         defenseUp: 5,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'monster'
     },
@@ -45,6 +46,7 @@ const loots = [
         description: 'the monsters claws can cut tomatoes now. Attack up by 5',
         attackUp: 5,
         defenseUp: 0,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'monster'
     },
@@ -53,6 +55,7 @@ const loots = [
         description: 'A boomerang flies through the air and hits the monster in the head. Defense down by 5',
         attackUp: 0,
         defenseUp: -5,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'monster'
     },
@@ -61,6 +64,7 @@ const loots = [
         description: 'While the monster is not looking, its claws are filed down. Attack down by 5',
         attackUp: -5,
         defenseUp: 0,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'monster'
     },
@@ -69,6 +73,7 @@ const loots = [
         description: 'The monster begins to glow green. It seems weaker but also stronger if that makes any sense. Attack up by 5 and defense down by 5',
         attackUp: 5,
         defenseUp: -5,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'monster'
     },
@@ -77,6 +82,7 @@ const loots = [
         description: 'A glimmering force field surrounds the hero. Defense up by 5',
         attackUp: 0,
         defenseUp: 5,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'player'
     },
@@ -85,6 +91,7 @@ const loots = [
         description: 'The heros weapon looks sharper. Attack up by 5',
         attackUp: 5,
         defenseUp: 0,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'player'
     },
@@ -93,6 +100,7 @@ const loots = [
         description: 'A rock flies through the air and hits the player in the head. Defense down by 5',
         attackUp: 0,
         defenseUp: -5,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'player'
     },
@@ -101,6 +109,7 @@ const loots = [
         description: 'It turns out the heros sword is broken. Attack down by 5',
         attackUp: -5,
         defenseUp: 0,
+        escapeUp: 0.1,
         type: 'item',
         affects: 'player'
     },
@@ -109,6 +118,43 @@ const loots = [
         description: 'The hero grows angry. They seems weaker but also stronger if that makes any sense. Attack up by 5 and defense down by 5',
         attackUp: 5,
         defenseUp: -5,
+        escapeUp: 0.1,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'sneakers',
+        description: 'The hero feels like they can run a marathon, escape up by 5%',
+        attackUp: 0,
+        defenseUp: -0,
+        escapeUp: 0.05,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'blink',
+        description: 'The hero binks several feet away, escape up by 5%',
+        attackUp: 0,
+        defenseUp: -0,
+        escapeUp: 0.05,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'tacks',
+        description: 'Tacks cover the floor, escape down by 5%',
+        attackUp: 0,
+        defenseUp: -0,
+        escapeUp: -0.05,
+        type: 'item',
+        affects: 'player'
+    },
+    {
+        name: 'confuse',
+        description: 'The hero forgets where the entrance is, escape down by 5%',
+        attackUp: 0,
+        defenseUp: -0,
+        escapeUp: -0.05,
         type: 'item',
         affects: 'player'
     },

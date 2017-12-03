@@ -116,10 +116,10 @@ class Player {
         this.runningAway = !this.runningAway;
     }
 
-    didRunAway() {
+    didRunAway(modifiers) {
         const r = Math.random();
 
-        return r < this.runawayChance;
+        return r < this.runawayChance + modifiers.player.escapeUp;
     }
 
     resetHealth() {

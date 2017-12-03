@@ -46,7 +46,7 @@ function handleCommand(command, username, item) {
                 game.addPlayer(player);
 
                 say.addMessage(new Message(`${username} you are now entering the dungeon. I whispered you your current status`));
-                // say.addMessage(new Message(player.status, 'multi-whisper', username));
+                say.addMessage(new Message(player.status, 'multi-line'));
             }
             break;
 
@@ -55,7 +55,7 @@ function handleCommand(command, username, item) {
 
             if(!player) break;
 
-            say.addMessage(new Message(player.status, 'multi-whisper', username));
+            say.addMessage(new Message(player.status, 'multi-line'));
             break;
 
         case '!explore':
@@ -147,7 +147,7 @@ function handleCommand(command, username, item) {
     }
 }
 
-setInterval(() => playGame(), 10000);
+setInterval(() => playGame(), 1000);
 
 function playGame() {
     if(!game.isActive) return;
@@ -204,7 +204,7 @@ function playGame() {
                     monster.hitBy(damage, modifiers);
                     say.addMessage(new Message(`${player.username} hits ${monster.name} for ${damage} damage. It's health now is ${monster.health}`));
                 } else {
-                    if(player.didRunAway()) {
+                    if(player.didRunAway(modifiers)) {
                         say.addMessage(new Message(`${player.username} ran away!`));
                         break;
                     } else {

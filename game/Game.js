@@ -150,17 +150,20 @@ class Game {
         const result = {
             player: {
                 attackUp: 0,
-                defenseUp: 0
+                defenseUp: 0,
+                escapeUp: 0
             },
             monster: {
                 attackUp: 0,
-                defenseUp: 0
+                defenseUp: 0,
+                escapeUp: 0
             }
         };
 
         return this.currentItems.reduce((modifiers, item) => {
             modifiers[item.affects].attackUp += item.attackUp;
             modifiers[item.affects].defenseUp += item.defenseUp;
+            modifiers[item.affects].escapeUp += item.escapeUp;
 
             return modifiers;
         }, result);

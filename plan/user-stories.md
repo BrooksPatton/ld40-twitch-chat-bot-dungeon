@@ -23,8 +23,8 @@
 * [x] As a player, I want to be able to run away from the monster
 * [x] As a player, I want to be able to offer treasure to a potential helper as a bribe
 * [x] As a player, I can choose to not honor my promise
+* [x] As a player, I want to use an item to help running away
 * [ ] As a player, I can tell the bot to give treasure to the helper player
-* [ ] As a player, I want to use an item to help running away
 * [x] As a player, I will have bad stuff happen to me if I fail to run away
 * [x] As a player, I want to be able to help the monster to hurt another player
 * [ ] I want a lot of treasures, loots, and monsters in the game
