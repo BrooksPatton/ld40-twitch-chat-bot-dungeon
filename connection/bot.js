@@ -1,5 +1,6 @@
 const tmi = require('tmi.js');
 const Say = require('../utility/Say');
+const Message = require('../utility/Message');
 const {channel} = require('../config');
 
 const options = {
@@ -23,7 +24,7 @@ client.connect();
 
 client.on('connected', (address, port) => {
     console.log('connected to twitch', address, port);
-    // say.addMessage('A large dungeon appears in chat, any of you dare to enter to gain its riches join a party now and test your luck.');
+    say.addMessage(new Message('Gamebot is online, say !help for help'));
 });
 
 client.on('disconnected', (reason) => {

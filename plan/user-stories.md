@@ -15,7 +15,7 @@
 * [x] As a player, if I defeat a monster I want to gain a level
 * [x] As a player, if I open a door and an item is in the room, I get the item
 * [x] As a player, I can play a monster from my bag if there wasn't a monster in the room. I must immediately fight the monster after
-* [ ] As a player, if there was no monster in the room I can look for loot in the room and get it privately
+* [x] As a player, if there was no monster in the room I can look for loot in the room and get it privately
 * [x] As a viewer, I want to see the result of a player fighting a monster
 * [x] As a player, if I fight a monster alone and win I want to get the treasure privately
 * [ ] As a player, I want to be able to use an item before fightning a monster

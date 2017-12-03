@@ -108,7 +108,7 @@ function getRandomTreasure() {
 }
 
 function getRandomLoot() {
-    if(Math.random() > 0.5) {
+    if(Math.random() > 0.01) {
         const r = Math.floor(Math.random() * loots.length);
 
         return loots[r];

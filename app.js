@@ -199,6 +199,10 @@ function playGame() {
                 game.nextPhase();
             }
 
+        } else {
+            say.addMessage(new Message(`You loot through the room and find something.`));
+            player.addTreasure(game.getRandomLoot());
+            game.nextTurn();
         }
     }
 }
