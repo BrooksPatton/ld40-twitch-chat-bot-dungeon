@@ -6,9 +6,8 @@ const Game = require('./game/Game');
 const Player = require('./game/Player');
 const Message = require('./utility/Message');
 const Item = require('./game/Item');
-const {generateEquippableItems, generateLoots} = require('./game/generateItems');
 
-const game = new Game(generateEquippableItems(), generateLoots(), say, Message);
+const game = new Game();
 
 client.on('chat', (channel, userstate, message, self) => {
     if(self) return;
@@ -49,7 +48,7 @@ function handleCommand(command, username) {
                 game.addPlayer(player);
 
                 say.addMessage(new Message(`${username} you are now entering the dungeon. I whispered you your current status`));
-                say.addMessage(new Message(player.status, 'multi-whisper', username));
+                // say.addMessage(new Message(player.status, 'multi-whisper', username));
             }
             break;
 
@@ -75,10 +74,8 @@ function handleCommand(command, username) {
 
                     if(game.currentLoot.type !== 'monster') {
                         player.addTreasure(game.currentLoot);
-                        // say.addMessage(new Message(`Play a monster card or loot the room`));
-                    } else {
-                        game.nextPhase();
                     }
+                    game.nextPhase();
                 }
             }
             break;
@@ -120,5 +117,61 @@ function playGame() {
         say.addMessage(new Message(`${player.username} it is your turn, start by exploring`));
         game.nextPhase();
         game.waitingForPlayerResponse();
+    } else if(game.currentPhase === 'ask for help') {
+        if(game.messageSentThisPhase) return;
+
+        let message;
+        let time = 1000 * 60 * (game.numberOfplayers - 1);
+
+        if(game.currentLoot.type === 'monster') {
+            message = `${player.username} you have ${time / 60000} minutes to negotiate help fighting the ${game.currentLoot.name} if you need it.`;
+        } else {
+            message = `${player.username} you have ${time / 60000} minutes to negotiate help in case you want to fight your own monster`;
+        }
+
+        say.addMessage(new Message(message));
+        setTimeout(() => game.nextPhase(), time);
+        game.messageSentThisPhase = true;
+    } else if(game.currentPhase === 'use items') {
+        if(game.messageSentThisPhase) return;
+
+        const time = 1000 * 60 * game.numberOfplayers;
+
+        say.addMessage(new Message(`All players, you now have ${time / 60000} minutes to use any items you want`));
+
+        setTimeout(() => game.nextPhase(), time);
+        game.messageSentThisPhase = true;
+    } else if(game.currentPhase === 'fight') {
+        if(game.currentLoot.type === 'monster') {
+            const monster = game.currentLoot;
+
+            while(player.health > 0) {
+                let damage = player.getDamage();
+
+                monster.hitBy(damage);
+                say.addMessage(new Message(`${player.username} hits ${monster.name} for ${damage} damage. It's health now is ${monster.health}`));
+                
+                if(monster.health > 0) {
+                    damage = monster.getDamage();
+
+                    player.hitBy(damage);
+                    say.addMessage(new Message(`${monster.name} hits ${player.username} for ${damage} damage. Their health now is ${player.health}`));
+                } else {
+                    break;
+                }
+            }
+
+            if(player.health <= 0) {
+                say.addMessage(new Message(`${player.username} you fought valiently but died to the ${monster.name}`));
+                game.kill(player);
+                game.nextTurn();
+            } else {
+                player.increaseLevel();
+                player.addTreasure(monster.treasure);
+                say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a treasure!!!`));
+                game.nextPhase();
+            }
+
+        }
     }
 }

@@ -56,11 +56,15 @@ class Say {
     }
 
     sendNormalMessage(text) {
-        this.client.say(this.channel, text);
+        this.client.say(this.channel, text)
+        .catch(e => this.resendMessage());;
     }
 
     sendMultiLineMessage(messages) {
-        messages.forEach(message => this.client.say(this.channel, message));
+        messages.forEach(message => {
+            this.client.say(this.channel, message)
+            .catch(e => this.resendMessage());
+        });
     }
 
     getMessage() {
@@ -70,7 +74,7 @@ class Say {
 
     sendWhisperMessage(text, username) {
         this.client.whisper(username, text)
-            .then(data => console.log('sent whisper', data));
+        .catch(e => this.resendMessage());
     }
 
     sendMultiLineWhisperMessage(messages, username) {

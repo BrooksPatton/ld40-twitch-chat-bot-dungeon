@@ -1,8 +1,8 @@
+const {getRandomLoot, getRandomTreasure} = require('./generateItems');
+
 class Game {
-    constructor(treasures, loots) {
+    constructor() {
         this.players = [];
-        this.treasures = treasures;
-        this.loots = loots;
         this.currentPlayersTurnIndex = 0;
         this.phases = [
             'waiting',
@@ -10,16 +10,18 @@ class Game {
             'ask for help',
             'use items',
             'fight',
-            'loot',
-            'run away'
+            'resolve turn'
         ];
         this.currentPhase = null;
         this.waitTimer;
         this.currentLoot;
         this.timedOut = false;
+        this.messageSentThisPhase = false;
     }
 
     nextPhase() {
+        this.messageSentThisPhase = false;
+
         switch (this.currentPhase) {
             case null:
                 this.currentPhase = 'waiting';
@@ -27,6 +29,22 @@ class Game {
 
             case 'waiting':
                 this.currentPhase = 'explore';
+                break;
+
+            case 'explore':
+                this.currentPhase = 'ask for help';
+                break;
+
+            case 'ask for help':
+                this.currentPhase = 'use items';
+                break;
+
+            case 'use items':
+                this.currentPhase = 'fight';
+                break;
+
+            case 'fight':
+                this.currentPhase = 'resolve turn';
                 break;
         
             default:
@@ -75,26 +93,14 @@ class Game {
 
     giveRandomTreasuresToPlayer(player) {
         for(let i = 0; i < 2; i = i + 1) {
-            player.addTreasure(this.getRandomTreasure());
+            player.addTreasure(getRandomTreasure());
         }
-    }
-
-    getRandomTreasure() {
-        const r = Math.floor(Math.random() * this.treasures.length);
-
-        return this.treasures[r];
     }
 
     giveRandomLootsToPlayer(player) {
         for(let i = 0; i < 2; i = i + 1) {
-            player.addTreasure(this.getRandomLoot());
+            player.addTreasure(getRandomLoot());
         }
-    }
-
-    getRandomLoot() {
-        const r = Math.floor(Math.random() * this.loots.length);
-
-        return this.loots[r];
     }
 
     getCurrentPlayer() {
@@ -114,6 +120,23 @@ class Game {
     nextTurn() {
         this.currentPlayersTurnIndex = this.currentPlayersTurnIndex + 1 >= this.players.length ? 0 : this.currentPlayersTurnIndex + 1;
         this.currentPhase = null;
+    }
+
+    getRandomLoot() {
+        return getRandomLoot();
+    }
+
+    kill(player) {
+        const i = this.players.indexOf(player);
+
+        if(i >= 0) {
+            this.players.splice(i, 1);
+            this.currentPlayersTurnIndex = this.currentPlayersTurnIndex - 1;
+        }
+    }
+
+    get numberOfplayers() {
+        return this.players.length;
     }
 }
 
