@@ -193,7 +193,7 @@ function handleCommand(command, username, item, targetUsername) {
             say.addMessage(new Message([
                 'Possible commands:',
                 '!repo - link to where you can find the code that I am created with',
-                '!info [item name] - Display the description of an item',
+                '!item [item name] - Display the description of an item',
                 '!game - is there a game being played now',
                 '!join - join a game!',
                 '!status - see your status',
