@@ -115,7 +115,7 @@ function handleCommand(command, username, item, targetUsername) {
             if(itemPlayed) {
                 game.stopTimer();
                 const time = 1000 * secondsToWaitPerPlayer;
-                const message = `${time} seconds left to play items. Use command !skip to move to next phase`;
+                const message = `${time / 1000} seconds left to play items. Use command !skip to move to next phase`;
                 say.addMessage(new Message(message));
                 return game.waitTimer = setTimeout(() => game.nextPhase(), time);
             }
