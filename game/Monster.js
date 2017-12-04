@@ -8,7 +8,7 @@ class Monster {
         };
         this.level = level;
         this.treasure = treasure;
-        this.health = health;
+        this.health = Math.ceil(health * (level / 1.5));
         this.type = 'monster';
     }
 

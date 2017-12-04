@@ -1,4 +1,10 @@
-const {getRandomLoot, getRandomTreasure} = require('./generateItems');
+const {
+    getRandomLoot, 
+    getRandomTreasure,
+    treasure,
+    loots,
+    monsters
+} = require('./generateItems');
 
 class Game {
     constructor() {
@@ -100,7 +106,7 @@ class Game {
 
     giveRandomLootsToPlayer(player) {
         for(let i = 0; i < 2; i = i + 1) {
-            player.addTreasure(getRandomLoot());
+            player.addTreasure(this.getRandomLoot());
         }
     }
 
@@ -116,9 +122,11 @@ class Game {
 
     stopTimer() {
         clearTimeout(this.waitTimer);
+        this.waitTimer = null;
     }
 
     nextTurn() {
+        if(this.waitTimer) this.stopTimer();
         this.currentPlayersTurnIndex = this.currentPlayersTurnIndex + 1 >= this.players.length ? 0 : this.currentPlayersTurnIndex + 1;
         this.currentPhase = null;
         this.currentItems = [];
@@ -126,7 +134,10 @@ class Game {
     }
 
     getRandomLoot() {
-        return getRandomLoot();
+        const numberOfplayers = this.players.length;
+        const highestPlayerLevel = this.players.reduce((highestLevel, player) => player.level > highestLevel ? player.level : highestLevel, 0);
+
+        return getRandomLoot(numberOfplayers + highestPlayerLevel);
     }
 
     kill(player) {
@@ -167,6 +178,25 @@ class Game {
 
             return modifiers;
         }, result);
+    }
+
+    getItemDescription(name) {
+        let foundItem = treasure.find(t => t.name === name) || loots.find(l => l.name === name) || monsters.find(m => m.name === name);
+        let description;
+
+        if(!foundItem) return null;
+
+        if(foundItem.type === 'defense') {
+            description = `${foundItem.name} - defenseUp: ${foundItem.defenseUp} - ${foundItem.description}`;
+        } else if(foundItem.type === 'weapon') {
+            description = `${foundItem.name} - attackUp: ${foundItem.attackUp} - ${foundItem.description}`;
+        } else if(foundItem.type === 'item') {
+            description = `${foundItem.name} - affects: ${foundItem.affects} - ${foundItem.attackUp !== 0 ? 'attackUp: ' + foundItem.attackUp : ''} - ${foundItem.defenseUp !== 0 ? 'defenseUp: ' + foundItem.defenseUp : ''} - ${foundItem.escapeUp !== 0 ? 'escapeUp: ' + foundItem.escapeUp : ''} - ${foundItem.description}`;
+        } else {
+            description = `${foundItem.name} - damage: ${foundItem.damage.dice}d${foundItem.damage.sides} - health: ${foundItem.health} - ${foundItem.description}`;
+        }
+
+        return description;
     }
 }
 

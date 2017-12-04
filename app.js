@@ -46,7 +46,7 @@ function handleCommand(command, username, item, targetUsername) {
                 game.addPlayer(player);
 
                 say.addMessage(new Message(`${username} you are now entering the dungeon. Here is your current status:`));
-                say.addMessage(new Message(player.status, 'multi-line'));
+                say.addMessage(new Message(player.status));
             }
             break;
 
@@ -55,7 +55,7 @@ function handleCommand(command, username, item, targetUsername) {
 
             if(!player) break;
 
-            say.addMessage(new Message(player.status, 'multi-line'));
+            say.addMessage(new Message(player.status));
             break;
 
         case '!explore':
@@ -68,7 +68,7 @@ function handleCommand(command, username, item, targetUsername) {
                     game.stopTimer();
                     game.nextPhase();
                     game.currentLoot = game.getRandomLoot();
-                    say.addMessage(new Message(`You explore the dungeon and see a ${game.currentLoot.level ? 'level ' + game.currentLoot.level : ''} ${game.currentLoot.name}.`));
+                    say.addMessage(new Message(`${player.username} You explore the dungeon and see a ${game.currentLoot.level ? 'level ' + game.currentLoot.level : ''} ${game.currentLoot.name}.`));
 
                     if(game.currentLoot.type !== 'monster') {
                         player.addTreasure(game.currentLoot);
@@ -79,13 +79,15 @@ function handleCommand(command, username, item, targetUsername) {
             break;
 
         case '!play': {
+            var itemPlayed = false;
+
             if(game.currentPhase !== 'use items') return say.addMessage(new Message(`Cannot play items now`));
 
             if(!item) {
                 return say.addMessage(new Message(`You must state what item or monster you want to play`));
             } else {
                 var player = game.getPlayer(username);
-                const loot = player.getLoot(item);
+                var loot = player.getLoot(item);
 
                 if(!loot) return say.addMessage(new Message(`Loot item not found`));
 
@@ -100,12 +102,22 @@ function handleCommand(command, username, item, targetUsername) {
                         game.currentLoot = loot;
                         say.addMessage(new Message(`You will now be facing a ${game.currentLoot.name}`))
                         player.removeLoot(loot);
+                        itemPlayed = true;
                     }
                 } else {
                     game.playItem(loot);
                     say.addMessage(new Message(loot.description));
                     player.removeLoot(loot);
+                    itemPlayed = true;
                 }
+            }
+
+            if(itemPlayed) {
+                game.stopTimer();
+                const time = 1000 * secondsToWaitPerPlayer;
+                const message = `${time} seconds left to play items. Use command !skip to move to next phase`;
+                say.addMessage(new Message(message));
+                return game.waitTimer = setTimeout(() => game.nextPhase(), time);
             }
             break;
         }
@@ -161,27 +173,35 @@ function handleCommand(command, username, item, targetUsername) {
                 game.timedOut = false;
                 return game.nextTurn();
             } else if(phase === 'ask for help' || phase === 'use items') {
-                const message = `Moving to the next phase`;
-                say.addMessage(new Message(message));
                 game.stopTimer();
                 game.timedOut = false;
                 return game.nextPhase();
             }
             break;
 
+        case '!item':
+            if(!item) return say.addMessage(new Message(`Item not found`));
+
+            var description = game.getItemDescription(item);
+
+            if(description) return say.addMessage(new Message(description));
+
+            return say.addMessage(new Message(`Item not found`));
+            break;
+
         case '!help':
             say.addMessage(new Message([
-                'I am a game bot here to kill you in my dungeon',
                 'Possible commands:',
-                '!repo - how you can find my code',
+                '!repo - link to where you can find the code that I am created with',
+                '!info [item name] - Display the description of an item',
                 '!game - is there a game being played now',
                 '!join - join a game!',
-                '!status - be whispered your status',
+                '!status - see your status',
                 '!explore - explore a room in the dungeon when it is your turn',
                 '!play [item name] - plays an item to affect combat',
                 '!run - run away from the monster',
                 '!transfer [item name] [player name] - Give an item to another player',
-                '!skip',
+                '!skip - skip the current phase',
                 '!help - this help'
             ], 'multi-line'));
 
@@ -231,23 +251,37 @@ function playGame() {
         const time = 1000 * secondsToWaitPerPlayer * game.numberOfplayers;
         const seconds = time / 1000;
 
-        say.addMessage(new Message(`All players, you now have ${seconds} seconds to use any items you want`));
+        say.addMessage(new Message(`All players, you now have ${seconds} seconds to use an item. Time will be reset for each item used`));
 
         game.waitTimer = setTimeout(() => game.nextPhase(), time);
         return game.messageSentThisPhase = true;
     } else if(game.currentPhase === 'fight') {
+        game.stopTimer();
+
         if(game.currentLoot.type === 'monster') {
             const monster = game.currentLoot;
             const modifiers = game.calculateCombatModifiers();
+            let message = `Entering combat phase - commands cannot be used`;
 
+            say.addMessage(new Message(message));
+            message = ``;
+            
+            if(modifiers.player.attackUp !== 0) message = `${message} player attack up ${modifiers.player.attackUp}`;
+            if(modifiers.player.defenseUp !== 0) message = `${message} player defense up ${modifiers.player.defenseUp}`;
+            if(modifiers.player.escapeUp !== 0) message = `${message} player escape up ${modifiers.player.escapeUp}`;
+            if(modifiers.monster.attackUp !== 0) message = `${message} monster attack up ${modifiers.monster.attackUp}`;
+            if(modifiers.monster.defenseUp !== 0) message = `${message} monster defense up ${modifiers.monster.defenseUp}`;
 
+            say.addMessage(new Message(message));
 
             while(player.health > 0) {
                 if(!player.runningAway) {
                     let damage = player.getDamage() + modifiers.player.attackUp;
+                    let message;
 
+                    message = `${player.username}(${player.health}) hits ${monster.name}(${monster.health}) for ${damage} damage`;
+                    say.addMessage(new Message(message));
                     monster.hitBy(damage, modifiers);
-                    say.addMessage(new Message(`${player.username} hits ${monster.name} for ${damage} damage. It's health now is ${monster.health}`));
                 } else {
                     if(player.didRunAway(modifiers)) {
                         say.addMessage(new Message(`${player.username} ran away!`));
@@ -260,15 +294,16 @@ function playGame() {
                 if(monster.health > 0) {
                     damage = monster.getDamage() + modifiers.monster.attackUp;
 
+                    message = `${monster.name}(${monster.health}) hits ${player.username}(${player.health}) for ${damage} damage`;
+                    say.addMessage(new Message(message));
                     player.hitBy(damage, modifiers);
-                    say.addMessage(new Message(`${monster.name} hits ${player.username} for ${damage} damage. Their health now is ${player.health}`));
                 } else {
                     break;
                 }
             }
 
             if(player.health <= 0) {
-                say.addMessage(new Message(`${player.username} you fought valiently but died to the ${monster.name}`));
+                say.addMessage(new Message(`${player.username} you fought valiantly but died to the ${monster.name}`));
                 game.kill(player);
                 return game.nextTurn();
             } else {
@@ -278,7 +313,7 @@ function playGame() {
                 } else {
                     player.increaseLevel();
                     player.addTreasure(monster.treasure);
-                    say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a ${monster.treasure.name}`));
+                    say.addMessage(new Message(`${player.username} you defeated the ${monster.name}! You get a ${monster.treasure.name} and increased to level ${player.level}`));
                     return game.nextPhase();
                 }
             }

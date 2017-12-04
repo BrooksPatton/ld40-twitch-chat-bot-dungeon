@@ -24,7 +24,7 @@ client.connect();
 
 client.on('connected', (address, port) => {
     console.log('connected to twitch', address, port);
-    say.addMessage(new Message('Gamebot is online, say !help for help'));
+    say.addMessage(new Message('Gamebot is online, send !help to see the help, or !join to join a game.'));
 });
 
 client.on('disconnected', (reason) => {

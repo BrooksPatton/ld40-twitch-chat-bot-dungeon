@@ -177,7 +177,7 @@ const monsters = [
             sides: 1,
             dice: 1
         },
-        health: 1
+        health: 2
     },
     {
         name: 'dragon',
@@ -197,6 +197,42 @@ const monsters = [
         },
         health: 2
     },
+    {
+        name: 'goblin',
+        description: 'A goblin, and it does not like you',
+        damage: {
+            sides: 4,
+            dice: 2
+        },
+        health: 7
+    },
+    {
+        name: 'mummy',
+        description: 'It wants to curse you',
+        damage: {
+            sides: 3,
+            dice: 3
+        },
+        health: 10
+    },
+    {
+        name: 'twitch-streamer',
+        description: 'They can 360 no scope you because they practice 20 hours a day',
+        damage: {
+            sides: 6,
+            dice: 4
+        },
+        health: 8
+    },
+    {
+        name: 'munchkin',
+        description: 'the most dangerous of them all',
+        damage: {
+            sides: 3,
+            dice: 2
+        },
+        health: 4
+    },
 ]
 
 function getRandomTreasure() {
@@ -205,7 +241,7 @@ function getRandomTreasure() {
     return treasure[r];
 }
 
-function getRandomLoot() {
+function getRandomLoot(levelCap) {
     if(Math.random() > 0.5) {
         const r = Math.floor(Math.random() * loots.length);
 
@@ -213,7 +249,7 @@ function getRandomLoot() {
     } else {
         const r = Math.floor(Math.random() * monsters.length);
         const monster = monsters[r];
-        const level = Math.ceil(Math.random() * 2);
+        const level = Math.ceil(Math.random() * levelCap);
 
         return new Monster(monster.name, monster.description, monster.damage, level, getRandomTreasure(), monster.health);
     }
@@ -221,5 +257,8 @@ function getRandomLoot() {
 
 module.exports = {
     getRandomTreasure,
-    getRandomLoot
+    getRandomLoot,
+    treasure,
+    loots,
+    monsters
 };

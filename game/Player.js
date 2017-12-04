@@ -19,23 +19,13 @@ class Player {
     }
 
     get status() {
-        const output = [
-            `level: ${this.level}`,
-            `-- Defense --`
-        ];
+        const intro = `${this.username}, level ${this.level}`;
+        const defense = this.equipped.defense.map((item) => item.name).join(', ');
+        const weapons = this.equipped.weapons.map((item) => item.name).join(', ');
+        const items = this.items.map((item) => item.name).join(', ');
+        const monsters = this.monsters.map((item) => `level ${item.level} ${item.name}`).join(', ');
 
-        this.equipped.defense.forEach(item => output.push(item.name));
-
-        output.push(`-- Weapons --`);
-        this.equipped.weapons.forEach(weapon => output.push(weapon.name));
-
-        output.push(`-- Current items --`);
-        this.items.forEach(item => output.push(item.name));
-
-        output.push(`-- Monsters --`);
-        this.monsters.forEach(monster => output.push(`level ${monster.level} ${monster.name}`));
-
-        return output;
+        return `${intro} - defense: ${defense} - weapons: ${weapons} - items: ${items} - monsters: ${monsters}`;
     }
 
     addTreasure(treasure) {
